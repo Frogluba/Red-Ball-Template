@@ -9,8 +9,9 @@ public class Ball : MonoBehaviour
     Rigidbody2D rb;
     public float maxSpeed;
     bool isGrounded;
+    public AudioClip jumpSound;
 
-     void Start()
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
@@ -23,7 +24,10 @@ public class Ball : MonoBehaviour
      if (Input.GetButtonDown("Jump")&& isGrounded)
         {
             rb.velocity += Vector2.up * jumpSpeed;
-  
+            var source = GetComponent<AudioSource>();
+            source.clip = jumpSound;
+            source.Play();
+
         }
 
         
@@ -41,11 +45,23 @@ public class Ball : MonoBehaviour
      void OnCollisionEnter2D(Collision2D collision)
     {
         isGrounded = true;
+
+
+        if (collision.gameObject.tag == "Enemy")
+        {
+            GameManager.instance.Lose();
+            Destroy(gameObject);
+        }
     }
 
    void OnCollisionExit2D(Collision2D collision)
     {
         isGrounded = false;
+    }
+
+     void OnTriggerEnter2D(Collider2D collision)
+    {
+        GameManager.instance.Win();
     }
 
 }
