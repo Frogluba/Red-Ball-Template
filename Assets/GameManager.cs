@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,46 +9,62 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public  List<string> levels;
-    public static GameManager instance;
-    public int curentLevel;
     public int hp;
+    public int currentLevel;
 
-     void Start()
+    public List<string> levels;
+    public static GameManager instance;
+
+    AudioSource source;
+    public AudioClip winSound;
+    public AudioClip loseSound;
+    public AudioClip gameOverSound;
+
+
+    void Awake()
     {
-        if(instance == null)
-        { 
+        source = GetComponent<AudioSource>();
+        if (instance == null)
+        {
             instance = this;
             DontDestroyOnLoad(this);
         }
         else
         {
             Destroy(this);
+            print("Found another singleton instance !!!! Die !!!!");
         }
-        
     }
-    public  void Win()
+
+    public void Win()
     {
-        curentLevel++;
+        source.PlayOneShot(winSound);
+        currentLevel++;
         Invoke("LoadScene", 1f);
-        SceneManager.LoadScene(levels[curentLevel]);
     }
+
     void LoadScene()
     {
-        SceneManager.LoadScene(levels[curentLevel]);
+        SceneManager.LoadScene(levels[currentLevel]);
     }
-    
-    public  void Lose()
+
+    public void Lose()
     {
         hp--;
-        if(hp>0)
+        if (hp > 0)
         {
-            Invoke("LoadScene", 1f);//loads next scene
+            // restart
+            Invoke("LoadScene", 1f);
+            source.PlayOneShot(loseSound);
         }
         else
         {
-            curentLevel = 0; //Restarts to level 1
+            // restart to level 0
+            currentLevel = 0;
             Invoke("LoadScene", 1f);
+            source.PlayOneShot(gameOverSound);
+            hp = 3;
         }
+
     }
 }
