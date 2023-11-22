@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public AudioClip winSound;
     public AudioClip loseSound;
     public AudioClip gameOverSound;
+    public Transform transition;
 
 
     void Awake()
@@ -35,12 +36,16 @@ public class GameManager : MonoBehaviour
             print("Found another singleton instance !!!! Die !!!!");
         }
     }
-
+     void Update()
+    {
+        transition.localScale = Vector3.MoveTowards(transition.localScale,Vector3.one*30,10 * Time.deltaTime);
+    }
     public void Win()
     {
         source.PlayOneShot(winSound);
         currentLevel++;
         Invoke("LoadScene", 1f);
+        
     }
 
     void LoadScene()
